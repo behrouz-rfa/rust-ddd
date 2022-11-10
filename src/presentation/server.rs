@@ -11,7 +11,7 @@ use rocket::request::{FromRequest, Outcome};
 use crate::infrastructure::db::{DbPool, get_dbpool};
 use crate::application::services::domain::user::service::UserService;
 use crate::infrastructure::domain::user::repository::UserRepository;
-use crate::presentation::handler::users::{insert,postitem};
+use crate::presentation::handler::users::{insert_users, login_user};
 use crate::presentation::config::{AppState, from_env};
 
 
@@ -24,7 +24,7 @@ fn not_found() -> Value {
 }
 
 pub struct Server {
-    port: u16,
+    _port: u16,
 }
 
 pub struct ServiceState<R> {
@@ -51,7 +51,7 @@ impl Server {
         let _rocket = rocket::custom(from_env())
             .manage(ServiceState { service: Atomic::new(user_service) })
             .attach(AppState::manage())
-            .mount("/api", routes![insert])
+            .mount("/api", routes![insert_users,login_user])
 
 
             .register("/", catchers![not_found])

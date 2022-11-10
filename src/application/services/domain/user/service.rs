@@ -15,11 +15,16 @@ where R:UserRepository
     }
 
 
-    pub  fn create_user(&self, user: NewUserDto) -> Result<User> {
+    pub fn create(&self, user: NewUserDto) -> Result<User> {
         let user = User::try_from(user)?;
         let user = self.user_repository.create(&user)?;
         Ok(user)
 
+    }
+    pub fn find_by(&self, dto: NewUserDto)-> Result<User> {
+        let user= User::try_from(dto)?;
+        let user = self.user_repository.find_by(&user)?;
+        Ok(user)
     }
 }
 

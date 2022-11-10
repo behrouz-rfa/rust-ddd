@@ -33,3 +33,24 @@ docker compose up -d
 ```bash
 cargo run
 ```
+
+## Examples
+1. For insert or registration
+```
+curl --location --request POST 'localhost:8082/api/users/insert' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+"username":"behrouz.r.fa",
+"email":"behrouz.r.fa@gmail.com'\''",
+"password":"pass@123"
+}'
+```
+2. for login
+```
+curl --location --request POST 'localhost:8082/api/users/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+"email":"behrouz.r.fa@gmail.com'\''",
+"password":"pass@123"
+}'
+```

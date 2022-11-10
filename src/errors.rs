@@ -1,3 +1,7 @@
+//! erros use for Error request validation
+//! user pass paramnter as json and alsoe as query paramete
+//! we use this validation to check and passs error
+//!
 use rocket::http::Status;
 use rocket::request::Request;
 use rocket::response::status;
@@ -14,6 +18,7 @@ pub type FieldName = &'static str;
 pub type FieldErrorCode = &'static str;
 
 impl Errors {
+    /// create new error for validation  first parameter filed name second parameter for error
     pub fn new(errs: &[(FieldName, FieldErrorCode)]) -> Self {
         let mut errors = ValidationErrors::new();
         for (field, code) in errs {
@@ -23,7 +28,9 @@ impl Errors {
     }
 }
 
+
 impl<'r> Responder<'r, 'static> for Errors {
+    /// return error as json to response rocket
     fn respond_to(self, req: &'r Request<'_>) -> response::Result<'static> {
         use validator::ValidationErrorsKind::Field;
 
@@ -45,11 +52,13 @@ impl<'r> Responder<'r, 'static> for Errors {
     }
 }
 
+///this use for form FieldValidator from request [Form,Json,QueryPara]
 pub struct FieldValidator {
     errors: ValidationErrors,
 }
 
 impl Default for FieldValidator {
+    /// create default FieldValidator
     fn default() -> Self {
         Self {
             errors: ValidationErrors::new(),
@@ -58,6 +67,13 @@ impl Default for FieldValidator {
 }
 
 impl FieldValidator {
+    /// this fn use for validate model
+    /// we need this function to create an extractor
+    /// # Examples
+    ///```
+    ///  let new_user = new_user.into_inner().user;
+    ///     let mut extractor = FieldValidator::validate(&new_user);
+    ///```
     pub fn validate<T: Validate>(model: &T) -> Self {
         Self {
             errors: model.validate().err().unwrap_or_else(ValidationErrors::new),
@@ -74,7 +90,16 @@ impl FieldValidator {
             })
         }
     }
-
+    /// this fn use for validate filed
+    /// # Examples
+    ///```
+    ///     let user = new_user.into_inner();
+    ///     let mut extractor = FieldValidator::default();
+    ///     let email = extractor.extract("email", user.email);
+    ///     let username = extractor.extract("username", user.username);
+    ///     let password = extractor.extract("password", user.password);
+    ///     extractor.check()?;
+    ///```
     pub fn extract<T>(&mut self, field_name: &'static str, field: Option<T>) -> T
     where
         T: Default,

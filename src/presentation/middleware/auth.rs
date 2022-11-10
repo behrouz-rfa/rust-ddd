@@ -1,3 +1,6 @@
+//! Auth work as middleware
+//! we impl FromRequest for Auth to check is user has valid jwt token or not
+
 use rocket::serde::{Serialize,Deserialize};
 use jsonwebtoken as jwt;
 use jwt::{DecodingKey,EncodingKey};
@@ -7,6 +10,7 @@ use rocket::request::{self, FromRequest, Request};
 use crate::presentation::config;
 use crate::presentation::config::AppState;
 
+/// Auth use keep exportion date id of user and username
 #[derive(Debug,Deserialize,Serialize)]
 pub struct Auth {
     pub exp: i64,
@@ -15,6 +19,7 @@ pub struct Auth {
 }
 
 impl Auth {
+    /// this fn use to encode user info to JWT token
     pub fn token(&self,secret:&[u8])-> String {
         let encoded_key = EncodingKey::from_base64_secret(std::str::from_utf8(secret).unwrap());
         jwt::encode(&jwt::Header::default(),self,&encoded_key.unwrap()).expect("jwt")
@@ -38,6 +43,7 @@ impl<'r> FromRequest<'r> for Auth {
     }
 }
 
+/// extract the authorization header fro m user `Request`
 fn extract_auth_from_request(request: &Request,secret:&[u8])->Option<Auth>{
     request
         .headers()
@@ -45,7 +51,7 @@ fn extract_auth_from_request(request: &Request,secret:&[u8])->Option<Auth>{
         .and_then(extract_token_from_header)
         .and_then(|token| decode_token(token, secret))
 }
-
+/// extract the authorization token  from   `header: &str`
 fn extract_token_from_header(header: &str) -> Option<&str> {
     if header.starts_with(config::TOKEN_PREFIX) {
         Some(&header[config::TOKEN_PREFIX.len()..])

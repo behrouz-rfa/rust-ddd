@@ -1,3 +1,11 @@
+//! The Server type for laucnh a hnadler
+//! and Server is going to have some configuration for run the application
+//! such as ['port','address','db config]
+//! Examples
+//!````
+//!  Server::lucnch().await?;
+//!````
+
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use crossbeam::epoch::Atomic;
@@ -23,37 +31,52 @@ fn not_found() -> Value {
     })
 }
 
+/// Represent to create new server with this struct
 pub struct Server {
-    _port: u16,
+    /// load config from env or toml file
+    _config: String,
 }
 
+
+/// The declartion of the `ServiceState` use for add
+/// all Dependency like Service and repository
+/// # Examples
+/// ```
+///   let user_repo = UserRepository::new(pool.clone());
+///   let user_service = UserService::new(user_repo);
+///   ServiceState { service: Atomic::new(user_service) }
+/// ```
 pub struct ServiceState<R> {
-  pub  service: Atomic<R>,
+    pub service: Atomic<R>,
 }
-
-// #[rocket::async_trait]
-// impl<'r, R> FromRequest<'r> for ServiceState<R> {
-//     type Error = ();
-//
-//     async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-//         let t = request.guard::<ServiceState<R>>().await;
-//         t
-//     }
-// }
-
 
 impl Server {
-    pub async fn lucnch() -> Result<(), rocket::Error> {
+    /// We create a custom builder for launch rocket as http handler
+    /// Some Configuration is come from `AppState` for mor details go to  the `config` file
+    /// In the launch we need to pass all dependancy as a State
+    /// # Exmples
+    /// ````
+    ///         let pool = get_dbpool();
+    ///         let user_repo = UserRepository::new(pool.clone());
+    ///         let user_service = UserService::new(user_repo);
+    ///         ServiceState { service: Atomic::new(user_service) }
+    ///
+    /// ```
+    pub async fn launch() -> Result<(), rocket::Error> {
+
+        //get db pool for `db`
+        //you can clone th DbPool and pass them to  multi Repository
         let pool = get_dbpool();
+        //create a new instance of UserRepository
         let user_repo = UserRepository::new(pool.clone());
+        // Create UserService and pass user repository as an Dependency for UserService
         let user_service = UserService::new(user_repo);
 
+        //Build rocket launcher adn pass all route and state to the manage and attach
         let _rocket = rocket::custom(from_env())
             .manage(ServiceState { service: Atomic::new(user_service) })
             .attach(AppState::manage())
             .mount("/api", routes![insert_users,login_user])
-
-
             .register("/", catchers![not_found])
             .launch()
             .await?;

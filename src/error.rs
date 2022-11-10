@@ -6,20 +6,24 @@ use thiserror::Error as ThisError;
 use diesel::result::{DatabaseErrorKind, Error};
 
 pub type Result<T> = std::result::Result<T, DbError>;
+
+/// `DatabaseError` this Error::DatabaseError we can create format! error an pass error as {0} param
+/// #Example
+/// ```
+/// DbError::DatabaseError("error database ".to_string())
+/// ```
+///
+/// `NoFound` use for unknown error and we pass error as param to
+/// #Example
+/// ```
+/// DbError::NotFound("error".to_string())
+/// ```
+///
 #[derive(Clone, Debug, ThisError)]
 pub enum DbError {
-    /// `DatabaseError` this Error::DatabaseError we can create format! error an pass error as {0} param
-    /// #Example
-    /// ```
-    /// DbError::DatabaseError("error database ".to_string())
-    /// ```
-    #[Error::DatabaseError("An error ocurred during database interaction. {0}")]
+
+    #[error("An error ocurred during database interaction. {0}")]
     DatabaseError(String),
-    /// `NoFound` use for unknown error and we pass error as param to
-    /// #Example
-    /// ```
-    /// DbError::NotFound("error".to_string())
-    /// ```
     #[error("Not found any result. {0}")]
     NoFound(String),
 }

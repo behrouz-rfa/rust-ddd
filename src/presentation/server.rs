@@ -18,8 +18,13 @@ use rocket::request::{FromRequest, Outcome};
 
 use crate::infrastructure::db::{DbPool, get_dbpool};
 use crate::application::services::domain::user::service::UserService;
+use crate::application::services::domain::article::service::ArticleService;
+use crate::application::services::domain::profile::service::ProfileService;
 use crate::infrastructure::domain::user::repository::UserRepository;
-use crate::presentation::http_handler::users::{insert_users, login_user,update_user};
+use crate::infrastructure::domain::article::repository::ArticleRepository;
+use crate::infrastructure::domain::profile::repository::ProfileRepository;
+use crate::presentation::http_handler::users::{insert_users, login_user, update_user};
+use crate::presentation::http_handler::article::{create_article, get_article};
 use crate::presentation::config::{AppState, from_env};
 
 
@@ -72,11 +77,30 @@ impl Server {
         // Create UserService and pass user repository as an Dependency for UserService
         let user_service = UserService::new(user_repo);
 
+        //create a new instance of ArticleRepository
+        let article_repo = ArticleRepository::new(pool.clone());
+        // Create UserService and pass user repository as an Dependency for ArticleService
+        let articel_service = ArticleService::new(article_repo);
+
+
+        //create a new instance of ProfileRepository
+        let profile_repo = ProfileRepository::new(pool.clone());
+        // Create UserService and pass user repository as an Dependency for ProfileService
+        let profile_service = ProfileService::new(profile_repo);
+
         //Build rocket launcher adn pass all route and state to the manage and attach
         let _rocket = rocket::custom(from_env())
             .manage(ServiceState { service: Atomic::new(user_service) })
+            .manage(ServiceState { service: Atomic::new(articel_service) })
+            .manage(ServiceState { service: Atomic::new(profile_service) })
             .attach(AppState::manage())
-            .mount("/api", routes![insert_users,login_user,update_user])
+            .mount("/api", routes![
+                insert_users,
+                login_user,
+                update_user,
+                create_article,get_article
+            ])
+
             .register("/", catchers![not_found])
             .launch()
             .await?;

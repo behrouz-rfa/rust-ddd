@@ -3,6 +3,7 @@ use diesel::pg::Pg;
 use diesel::prelude::*;
 use crate::schema::users;
 use rocket::serde::{Deserialize,Serialize, json, json::Json};
+use crate::domain::profile::Profile;
 
 use crate::presentation::middleware::auth::Auth;
 
@@ -72,4 +73,13 @@ impl User {
             token,
         }
     }
+    pub fn to_profile(self, following: bool) -> Profile {
+        Profile {
+            username: self.username,
+            bio: self.bio,
+            image: self.image,
+            following,
+        }
+    }
+
 }

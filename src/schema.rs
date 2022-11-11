@@ -8,7 +8,7 @@ diesel::table! {
         description -> Text,
         body -> Text,
         author -> Int4,
-        tag_list -> Array<Nullable<Text>>,
+        tag_list -> Array<Text>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
         favorites_count -> Int4,

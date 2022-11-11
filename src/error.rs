@@ -35,13 +35,12 @@ impl From<Error> for DbError {
     /// track the error from Database error
     /// we can check the error base on `DatabaseErrorKind`
     fn from(err: Error) -> Self {
-        println!("errorrrrrrrrrrrr {}",err.to_string());
         if let Error::DatabaseError(DatabaseErrorKind::UniqueViolation, info) = &err {
             return match info.constraint_name() {
                 Some(db_error) => DbError::DatabaseError(db_error.to_string()),
                 _ => DbError::DatabaseError("fatal".to_string())
             };
         }
-        panic!("Error creating user: {:?}", err)
+        DbError::CustomErroeMessage("we have error on database please check the error".to_string())
     }
 }

@@ -93,6 +93,8 @@ impl Repository for UserRepository {
         let mut conn = self.db_pool.get().unwrap();
 
         //find user with id
+
+
         let user_find = users
             .filter(id.eq(id))
             .first::<User>(&mut conn)

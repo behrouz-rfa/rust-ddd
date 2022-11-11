@@ -10,6 +10,13 @@
 
 This repository is used to present how I find implementing DDD in Rust projects works out
 
+
+## Framework
+
+- Web : [rocket](https://github.com/SergioBenitez/Rocket)
+- Database : [Diesel](https://github.com/diesel-rs/diesel).
+
+
 ## Running 
 
 1. Clone the repository locally
@@ -65,3 +72,8 @@ curl --location --request PUT 'localhost:8082/api/user' \
 "bio": "this test for bio"
 }'
 ```
+## TODO 
+- [ ] fix db pool
+- [ ] unit test
+- [ ] integration test
+- [ ] Better error handling

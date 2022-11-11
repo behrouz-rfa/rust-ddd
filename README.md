@@ -54,3 +54,14 @@ curl --location --request POST 'localhost:8082/api/users/login' \
 "password":"pass@123"
 }'
 ```
+3. update user
+```
+curl --location --request PUT 'localhost:8082/api/user' \
+--header 'Authorization: Token eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzMzMTY3OTUsImlkIjoyOCwidXNlcm5hbWUiOiJ0ZXN0MTEyMjIifQ._N82DPNiw27gVdBFuEPv2Tps_TbUH6wXgq-wBIxUQfc' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+"email":"master@gmail.com'\''",
+"username":"master@123",
+"bio": "this test for bio"
+}'
+```

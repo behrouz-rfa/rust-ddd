@@ -19,7 +19,7 @@ use rocket::request::{FromRequest, Outcome};
 use crate::infrastructure::db::{DbPool, get_dbpool};
 use crate::application::services::domain::user::service::UserService;
 use crate::infrastructure::domain::user::repository::UserRepository;
-use crate::presentation::handler::users::{insert_users, login_user};
+use crate::presentation::http_handler::users::{insert_users, login_user,update_user};
 use crate::presentation::config::{AppState, from_env};
 
 
@@ -51,7 +51,7 @@ pub struct ServiceState<R> {
 }
 
 impl Server {
-    /// We create a custom builder for launch rocket as http handler
+    /// We create a custom builder for launch rocket as http http_handler
     /// Some Configuration is come from `AppState` for mor details go to  the `config` file
     /// In the launch we need to pass all dependancy as a State
     /// # Exmples
@@ -76,7 +76,7 @@ impl Server {
         let _rocket = rocket::custom(from_env())
             .manage(ServiceState { service: Atomic::new(user_service) })
             .attach(AppState::manage())
-            .mount("/api", routes![insert_users,login_user])
+            .mount("/api", routes![insert_users,login_user,update_user])
             .register("/", catchers![not_found])
             .launch()
             .await?;

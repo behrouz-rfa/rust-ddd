@@ -26,6 +26,8 @@ pub enum DbError {
     DatabaseError(String),
     #[error("Not found any result. {0}")]
     NoFound(String),
+    #[error("{0}")]
+    CustomErroeMessage(String),
 }
 
 impl From<Error> for DbError {
@@ -33,6 +35,7 @@ impl From<Error> for DbError {
     /// track the error from Database error
     /// we can check the error base on `DatabaseErrorKind`
     fn from(err: Error) -> Self {
+        println!("errorrrrrrrrrrrr {}",err.to_string());
         if let Error::DatabaseError(DatabaseErrorKind::UniqueViolation, info) = &err {
             return match info.constraint_name() {
                 Some(db_error) => DbError::DatabaseError(db_error.to_string()),

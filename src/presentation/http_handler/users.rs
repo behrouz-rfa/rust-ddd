@@ -1,15 +1,19 @@
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
+use diesel::serialize::IsNull::No;
 use rocket::request::FromRequest;
 use rocket::serde::json::{json, Json, Value};
 use rocket::serde::Deserialize;
 use crate::infrastructure::domain::user::repository::UserRepository;
 use crate::application::services::domain::user::{service::UserService};
 use rocket::State;
-use crate::application::services::domain::user::dto::NewUserDto;
+
+use crate::application::services::domain::user::dto::{NewUserDto, UpdateUserDto};
+use crate::domain::user::entity::UpdateUserData;
 use crate::error::DbError;
 use crate::errors::{Errors, FieldValidator};
 use crate::presentation::config::AppState;
+use crate::presentation::middleware::auth::Auth;
 use crate::presentation::server::ServiceState;
 
 
@@ -107,5 +111,48 @@ pub fn login_user(
     Err(Errors::new(&[("email or password", "is invalid")]))
 }
 
+#[derive(Debug, Deserialize, PartialEq, Eq, Validate)]
+pub struct UpdateUserRequest {
+    pub(crate) username: Option<String>,
+    pub(crate) email: Option<String>,
+    pub(crate) bio: Option<String>,
+    pub(crate) image: Option<String>,
+
+    // hack to skip the field
+    pub(crate) password: Option<String>,
+}
+
+
+#[put("/user", format = "json", data = "<user>")]
+pub fn update_user(
+    user: Json<UpdateUserRequest>,
+    auth: Auth,
+    state: &State<AppState>,
+    user_service: &State<ServiceState<UserService<UserRepository>>>,
+) -> Result<Value, Errors> {
+    let g = &crossbeam::epoch::pin();
+    let secret = state.secret.clone();
+    if let shared = user_service.service.load(Ordering::Relaxed, g) {
+        if shared.is_null() {
+            return Err(Errors::new(&[("server", "error occur")]));
+        }
+        let t = unsafe { shared.as_ref() };
+        return t.unwrap().update_user(auth.id, UpdateUserDto {
+            username: user.username.clone(),
+            email: user.email.clone(),
+            bio: user.bio.clone(),
+            image: user.image.clone(),
+            password: None,
+        }).map(|user| json!(user.to_jwt_user(&secret)))
+            .map_err(|err| {
+                println!("{}", err);
+
+                Errors::new(&[("err", "user not exist")])
+            }
+            );
+    }
+
+    Err(Errors::new(&[("email or password", "is invalid")]))
+}
 
 

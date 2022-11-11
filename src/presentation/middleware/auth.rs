@@ -53,6 +53,7 @@ fn extract_auth_from_request(request: &Request,secret:&[u8])->Option<Auth>{
 }
 /// extract the authorization token  from   `header: &str`
 fn extract_token_from_header(header: &str) -> Option<&str> {
+
     if header.starts_with(config::TOKEN_PREFIX) {
         Some(&header[config::TOKEN_PREFIX.len()..])
     } else {

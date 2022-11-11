@@ -2,7 +2,7 @@ use chrono::{Duration, Utc};
 use diesel::pg::Pg;
 use diesel::prelude::*;
 use crate::schema::users;
-use rocket::serde::{Serialize, json, json::Json};
+use rocket::serde::{Deserialize,Serialize, json, json::Json};
 
 use crate::presentation::middleware::auth::Auth;
 
@@ -37,6 +37,21 @@ pub struct NewUser<'a> {
     pub email: &'a str,
     pub hash: &'a str,
 }
+
+
+#[derive(Deserialize, AsChangeset, Default,Debug)]
+#[table_name = "users"]
+pub struct UpdateUserData {
+    pub(crate) username: Option<String>,
+    pub(crate) email: Option<String>,
+    pub(crate) bio: Option<String>,
+    pub(crate) image: Option<String>,
+
+    // hack to skip the field
+    #[column_name = "hash"]
+    pub(crate)  password: Option<String>,
+}
+
 
 impl User {
     pub fn to_jwt_user(&self, secret: &[u8]) -> UserAuth {

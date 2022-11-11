@@ -1,5 +1,5 @@
 
 pub mod server;
 pub mod config;
-pub mod handler;
+pub mod http_handler;
 pub mod middleware;

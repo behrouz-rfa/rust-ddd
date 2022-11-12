@@ -35,6 +35,7 @@ impl From<Error> for DbError {
     /// track the error from Database error
     /// we can check the error base on `DatabaseErrorKind`
     fn from(err: Error) -> Self {
+        dbg!(&err);
         if let Error::DatabaseError(DatabaseErrorKind::UniqueViolation, info) = &err {
             return match info.constraint_name() {
                 Some(db_error) => DbError::DatabaseError(db_error.to_string()),

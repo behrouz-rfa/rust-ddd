@@ -16,8 +16,9 @@ use diesel::{self, insert_into, RunQueryDsl};
 use diesel::dsl::sql;
 use diesel::prelude::*;
 use diesel::sql_types::{Bigint, Bool, Integer, Text};
-use crate::infrastructure::domain::article::dto::{NewArticle, UpdateArticleData};
 
+use crate::infrastructure::domain::article::dto::{NewArticle, UpdateArticleData};
+use rand::{distributions::Alphanumeric, thread_rng, Rng};
 const SUFFIX_LEN: usize = 6;
 const DEFAULT_LIMIT: i64 = 20;
 
@@ -37,7 +38,7 @@ impl Repository for ArticleRepository {
     fn create(&self, article: Article) -> Result<ArticleJson> {
         use crate::schema::{users::dsl::*};
         let new_articel = &NewArticle {
-            slug: &*article.slug,
+            slug: &slugify(&*article.title),
             title: &*article.title,
             description: &*article.description,
             body: &*article.body,
@@ -47,10 +48,11 @@ impl Repository for ArticleRepository {
         let mut conn = self.db_pool.get().unwrap();
 
         let user_find = users
-            .filter(id.eq(article.id))
+            .filter(id.eq(article.author))
             .first::<User>(&mut conn)
             .map_err(Into::<DbError>::into)
             .ok();
+
 
         if let Some(author) = user_find {
             let result = diesel::insert_into(crate::schema::articles::table)
@@ -283,4 +285,20 @@ fn populate(conn: &mut PgConnection, article: Article, favorited: bool) -> Artic
         .unwrap();
 
     article.attach(author, favorited)
+}
+
+fn slugify(title: &str) -> String {
+    if cfg!(feature = "random-suffix") {
+        format!("{}-{}", slug::slugify(title), generate_suffix(SUFFIX_LEN))
+    } else {
+        slug::slugify(title)
+    }
+}
+
+fn generate_suffix(len: usize) -> String {
+    let mut rng = thread_rng();
+    (0..len)
+        .map(|_| rng.sample(Alphanumeric))
+        .map(char::from)
+        .collect()
 }

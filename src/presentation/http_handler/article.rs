@@ -49,7 +49,7 @@ pub fn create_article(article_req: Json<NewArticleData>, auth: Auth, state: &Sta
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("Server", "Error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -64,7 +64,7 @@ pub fn create_article(article_req: Json<NewArticleData>, auth: Auth, state: &Sta
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("create ", "could not create article")])
             }
             );
     }
@@ -124,7 +124,7 @@ pub fn get_articles(params: FindArticles, auth: Auth, state: &State<AppState>, u
             favorited: params.favorited,
             limit: params.limit,
             offset: params.offset,
-        }, auth.id).map(|article| json!(article))
+        }, auth.id).map(|article| json!({ "articles": article, "articlesCount": article.len() }))
             .map_err(|err| {
                 println!("{}", err);
 
@@ -266,7 +266,7 @@ pub fn get_articles_feed(params: FeedArticlesReq, auth: Auth, state: &State<AppS
         return t.unwrap().feed(FeedArticlesDto {
             offset: params.offset,
             limit: params.limit,
-        }, auth.id).map(|article| json!(article))
+        }, auth.id).map(|article| json!({ "articles": article, "articlesCount": article.len() }))
             .map_err(|err| {
                 println!("{}", err);
 

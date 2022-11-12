@@ -73,7 +73,7 @@ curl --location --request PUT 'localhost:8082/api/user' \
 }'
 ```
 ## TODO 
+- [x] integration test
 - [ ] fix db pool
 - [ ] unit test
-- [ ] integration test
 - [ ] Better error handling

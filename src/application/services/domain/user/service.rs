@@ -32,5 +32,10 @@ where R:UserRepository
         let user = self.user_repository.update(id, &user)?;
         Ok(user)
     }
+
+    pub fn find(&self,id: i32)-> Result<User> {
+        self.user_repository.find_one(id)
+    }
+
 }
 

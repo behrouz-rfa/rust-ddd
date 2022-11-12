@@ -25,14 +25,14 @@ use crate::infrastructure::domain::user::repository::UserRepository;
 use crate::infrastructure::domain::article::repository::ArticleRepository;
 use crate::infrastructure::domain::comment::repository::CommentRepository;
 use crate::infrastructure::domain::profile::repository::ProfileRepository;
-use crate::presentation::http_handler::users::{insert_users, login_user, update_user};
+use crate::presentation::http_handler::users::{get_user,insert_users, login_user, update_user};
 use crate::presentation::http_handler::profile::{get_profile,follow,unfollow};
 use crate::presentation::http_handler::article::{create_article, get_article,delete_article,delete_comment,favorite_article,get_articles_feed,get_comments,get_articles,post_comment,unfavorite_article};
 use crate::presentation::config::{AppState, from_env};
 
 
 #[catch(404)]
-fn not_found() -> Value {
+pub fn not_found() -> Value {
     json!({
         "status": "error",
         "reason": "Resource was not found."
@@ -105,6 +105,7 @@ impl Server {
             .attach(AppState::manage())
             .mount("/api", routes![
                 insert_users,
+                get_user,
                 login_user,
                 update_user,
                 create_article,get_article,

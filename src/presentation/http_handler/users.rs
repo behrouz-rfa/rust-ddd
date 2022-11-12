@@ -29,7 +29,7 @@ pub struct NewUserData {
 }
 
 
-#[post("/users/insert", format = "json", data = "<new_user>")]
+#[post("/users/register", format = "json", data = "<new_user>")]
 pub fn insert_users(new_user: Json<NewUserData>, state: &State<AppState>, user_service: &State<ServiceState<UserService<UserRepository>>>) -> Result<Value, Errors> {
     let user = new_user.into_inner();
 
@@ -154,5 +154,34 @@ pub fn update_user(
 
     Err(Errors::new(&[("email or password", "is invalid")]))
 }
+
+
+
+#[get("/user")]
+pub fn get_user(
+
+    auth: Auth,
+    state: &State<AppState>,
+    user_service: &State<ServiceState<UserService<UserRepository>>>,
+) -> Result<Value, Errors> {
+    let g = &crossbeam::epoch::pin();
+    let secret = state.secret.clone();
+    if let shared = user_service.service.load(Ordering::Relaxed, g) {
+        if shared.is_null() {
+            return Err(Errors::new(&[("server", "error occur")]));
+        }
+        let t = unsafe { shared.as_ref() };
+        return t.unwrap().find(auth.id).map(|user| json!(user.to_jwt_user(&secret)))
+            .map_err(|err| {
+                println!("{}", err);
+
+                Errors::new(&[("err", "user not exist")])
+            }
+            );
+    }
+
+    Err(Errors::new(&[("email or password", "is invalid")]))
+}
+
 
 

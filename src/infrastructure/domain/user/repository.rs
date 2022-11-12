@@ -87,7 +87,7 @@ impl Repository for UserRepository {
         return Err(DbError::NoFound("not found".to_string()));
     }
 
-    fn find_one(&self, id: &i32) -> Result<User> {
+    fn find_one(&self, userid: i32) -> Result<User> {
         use crate::schema::{users::dsl::*};
         //get the db connection
         let mut conn = self.db_pool.get().unwrap();
@@ -96,7 +96,7 @@ impl Repository for UserRepository {
 
 
         let user_find = users
-            .filter(id.eq(id))
+            .filter(id.eq(userid))
             .first::<User>(&mut conn)
             .optional()
             .map_err(Into::<DbError>::into);

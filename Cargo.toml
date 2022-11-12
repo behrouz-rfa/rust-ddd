@@ -1,9 +1,19 @@
 [package]
+authors = ["Behrouz <behrouz.r.fa@gmail.com>"]
 name = "rust-ddd"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+homepage = "https://github.com/behrouz-rfa/rust-ddd"
+repository = "https://github.com/behrouz-rfa/rust-ddd"
+documentation = "https://github.com/behrouz-rfa/rust-ddd"
+
+description = """
+This project is used to present how I find implementing DDD in Rust projects works out.
+Use rocket  to  (CRUD, auth, advanced patterns, DDD)
+"""
+readme = "README.md"
 
 [dependencies]
 rocket = { version = "0.5.0-rc.2", default-features = false, features = ["json"] }

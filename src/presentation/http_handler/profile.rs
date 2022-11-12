@@ -26,7 +26,7 @@ pub fn get_profile(username: String,
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));;
         }
         let t = unsafe { shared.as_ref() };
 
@@ -34,13 +34,13 @@ pub fn get_profile(username: String,
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur while getting user profile")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur while getting user profile")]))
 }
 
 #[post("/profiles/<username>/follow")]
@@ -51,7 +51,7 @@ pub fn follow(username: String,
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
 
@@ -59,13 +59,13 @@ pub fn follow(username: String,
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur while follow user")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur while follow user")]))
 }
 
 #[delete("/profiles/<username>/follow")]
@@ -76,7 +76,7 @@ pub fn unfollow(username: String,
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
 
@@ -84,11 +84,11 @@ pub fn unfollow(username: String,
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur while unfollow user")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur while unfollow user")]))
 }

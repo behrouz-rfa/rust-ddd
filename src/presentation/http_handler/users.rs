@@ -43,7 +43,7 @@ pub fn insert_users(new_user: Json<NewUserData>, state: &State<AppState>, user_s
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -91,7 +91,7 @@ pub fn login_user(
     let secret = state.secret.clone();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         return t.unwrap().find_by(NewUserDto {
@@ -102,13 +102,13 @@ pub fn login_user(
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user not exist")])
+                Errors::new(&[("err", "a problem occur while login")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("email or password", "is invalid")]))
+    Err(Errors::new(&[("err", "a problem occur while login")]))
 }
 
 #[derive(Debug, Deserialize, PartialEq, Eq, Validate)]
@@ -134,7 +134,7 @@ pub fn update_user(
     let secret = state.secret.clone();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("server", "error occur")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         return t.unwrap().update_user(auth.id, UpdateUserDto {
@@ -147,19 +147,17 @@ pub fn update_user(
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user not exist")])
+                Errors::new(&[("err", "a problem occur while updating")])
             }
             );
     }
 
-    Err(Errors::new(&[("email or password", "is invalid")]))
+    Err(Errors::new(&[("err", "a problem occur while updating")]))
 }
-
 
 
 #[get("/user")]
 pub fn get_user(
-
     auth: Auth,
     state: &State<AppState>,
     user_service: &State<ServiceState<UserService<UserRepository>>>,
@@ -168,19 +166,19 @@ pub fn get_user(
     let secret = state.secret.clone();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("server", "error occur")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         return t.unwrap().find(auth.id).map(|user| json!(user.to_jwt_user(&secret)))
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user not exist")])
+                Errors::new(&[("err", "user not found")])
             }
             );
     }
 
-    Err(Errors::new(&[("email or password", "is invalid")]))
+    Err(Errors::new(&[("err", "user not found")]))
 }
 
 

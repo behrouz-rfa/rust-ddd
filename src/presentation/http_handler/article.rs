@@ -49,7 +49,7 @@ pub fn create_article(article_req: Json<NewArticleData>, auth: Auth, state: &Sta
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("Server", "Error")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -81,7 +81,7 @@ pub fn get_article(slug: String, auth: Auth, state: &State<AppState>, user_servi
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -89,13 +89,13 @@ pub fn get_article(slug: String, auth: Auth, state: &State<AppState>, user_servi
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur to get article")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur to get article")]))
 }
 
 #[derive(FromForm, Default)]
@@ -114,7 +114,7 @@ pub fn get_articles(params: FindArticles, auth: Auth, state: &State<AppState>, u
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -128,13 +128,13 @@ pub fn get_articles(params: FindArticles, auth: Auth, state: &State<AppState>, u
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur to get articles")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur to get articles")]))
 }
 
 
@@ -143,7 +143,7 @@ pub fn delete_article(slug: String, auth: Auth, state: &State<AppState>, user_se
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -151,13 +151,13 @@ pub fn delete_article(slug: String, auth: Auth, state: &State<AppState>, user_se
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur to delete article")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur to delete article")]))
 }
 
 
@@ -166,7 +166,7 @@ pub fn favorite_article(slug: String, auth: Auth, state: &State<AppState>, user_
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -174,13 +174,13 @@ pub fn favorite_article(slug: String, auth: Auth, state: &State<AppState>, user_
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur   on favorite article")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur   on favorite article")]))
 }
 
 #[delete("/articles/<slug>/favorite")]
@@ -188,7 +188,7 @@ pub fn unfavorite_article(slug: String, auth: Auth, state: &State<AppState>, use
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -196,13 +196,13 @@ pub fn unfavorite_article(slug: String, auth: Auth, state: &State<AppState>, use
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur   on unfavorite article")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur   on unfavorite article")]))
 }
 
 
@@ -223,7 +223,7 @@ pub fn update_articles(slug: String, article_req: Json<UpdateArticleReq>, auth: 
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -239,13 +239,13 @@ pub fn update_articles(slug: String, article_req: Json<UpdateArticleReq>, auth: 
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur   to update article")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur   to update article")]))
 }
 
 #[derive(FromForm, Default)]
@@ -259,7 +259,7 @@ pub fn get_articles_feed(params: FeedArticlesReq, auth: Auth, state: &State<AppS
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -270,13 +270,13 @@ pub fn get_articles_feed(params: FeedArticlesReq, auth: Auth, state: &State<AppS
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "having a problem on articles feed")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "having a problem on articles feed")]))
 }
 
 
@@ -301,7 +301,7 @@ pub fn post_comment(slug: String,
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -309,13 +309,13 @@ pub fn post_comment(slug: String,
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "having problem to post comment")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err( Errors::new(&[("err", "having problem to post comment")]))
 }
 
 
@@ -328,7 +328,7 @@ pub fn get_comments(slug: String,
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -336,13 +336,13 @@ pub fn get_comments(slug: String,
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur on get comments")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur on get comments")]))
 }
 
 
@@ -354,7 +354,7 @@ pub fn delete_comment(slug: String, id: i32,
     let g = &crossbeam::epoch::pin();
     if let shared = user_service.service.load(Ordering::Relaxed, g) {
         if shared.is_null() {
-            return Err(Errors::new(&[("email or password", "is invalid")]));
+            return Err(Errors::new(&[("error", "server error")]));
         }
         let t = unsafe { shared.as_ref() };
         let secret = state.secret.clone();
@@ -362,11 +362,11 @@ pub fn delete_comment(slug: String, id: i32,
             .map_err(|err| {
                 println!("{}", err);
 
-                Errors::new(&[("err", "user already exist")])
+                Errors::new(&[("err", "a problem occur on delete comment")])
             }
             );
     }
 
 
-    Err(Errors::new(&[("not found", "Article not found")]))
+    Err(Errors::new(&[("err", "a problem occur on delete comment")]))
 }

@@ -33,11 +33,11 @@ pub struct NewArticle<'a> {
 #[derive(Deserialize, AsChangeset, Default, Clone)]
 #[table_name = "articles"]
 pub struct UpdateArticleData {
-    title: Option<String>,
-    description: Option<String>,
-    body: Option<String>,
-    #[serde(skip)]
-    slug: Option<String>,
-    #[serde(rename = "tagList")]
-    tag_list: Vec<String>,
+  pub title: Option<String>,
+  pub description: Option<String>,
+  pub body: Option<String>,
+   #[serde(skip)]
+  pub slug: Option<String>,
+   #[serde(rename = "tagList")]
+  pub tag_list: Vec<String>,
 }

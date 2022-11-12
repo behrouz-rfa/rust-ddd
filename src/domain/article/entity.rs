@@ -38,7 +38,7 @@ impl Article {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize,Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ArticleJson {
     pub id: i32,

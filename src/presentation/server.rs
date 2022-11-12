@@ -17,14 +17,17 @@ use rocket::fairing::AdHoc;
 use rocket::request::{FromRequest, Outcome};
 
 use crate::infrastructure::db::{DbPool, get_dbpool};
+use crate::application::services::domain::comment::service::CommentService;
 use crate::application::services::domain::user::service::UserService;
 use crate::application::services::domain::article::service::ArticleService;
 use crate::application::services::domain::profile::service::ProfileService;
 use crate::infrastructure::domain::user::repository::UserRepository;
 use crate::infrastructure::domain::article::repository::ArticleRepository;
+use crate::infrastructure::domain::comment::repository::CommentRepository;
 use crate::infrastructure::domain::profile::repository::ProfileRepository;
 use crate::presentation::http_handler::users::{insert_users, login_user, update_user};
-use crate::presentation::http_handler::article::{create_article, get_article};
+use crate::presentation::http_handler::profile::{get_profile,follow,unfollow};
+use crate::presentation::http_handler::article::{create_article, get_article,delete_article,delete_comment,favorite_article,get_articles_feed,get_comments,get_articles,post_comment,unfavorite_article};
 use crate::presentation::config::{AppState, from_env};
 
 
@@ -88,17 +91,27 @@ impl Server {
         // Create UserService and pass user repository as an Dependency for ProfileService
         let profile_service = ProfileService::new(profile_repo);
 
+        //create a new instance of CommentRepository
+        let comment_repo = CommentRepository::new(pool.clone());
+        // Create UserService and pass user repository as an Dependency for CommentService
+        let comment_service = CommentService::new(comment_repo);
+
         //Build rocket launcher adn pass all route and state to the manage and attach
         let _rocket = rocket::custom(from_env())
             .manage(ServiceState { service: Atomic::new(user_service) })
             .manage(ServiceState { service: Atomic::new(articel_service) })
             .manage(ServiceState { service: Atomic::new(profile_service) })
+            .manage(ServiceState { service: Atomic::new(comment_service) })
             .attach(AppState::manage())
             .mount("/api", routes![
                 insert_users,
                 login_user,
                 update_user,
-                create_article,get_article
+                create_article,get_article,
+                delete_comment,favorite_article,delete_article,
+                get_articles_feed,get_comments,get_articles
+                ,post_comment,unfavorite_article,
+                get_profile,follow,unfollow
             ])
 
             .register("/", catchers![not_found])

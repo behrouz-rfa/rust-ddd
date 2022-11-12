@@ -37,3 +37,12 @@ pub struct CommentJson {
     pub created_at: String,
     pub updated_at: String,
 }
+
+#[derive(Insertable)]
+#[table_name = "comments"]
+pub struct NewComment<'a> {
+  pub body: &'a str,
+  pub author: i32,
+  pub article: i32,
+}
+

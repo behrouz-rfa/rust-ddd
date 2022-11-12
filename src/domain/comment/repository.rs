@@ -1,10 +1,8 @@
-use crate::domain::comment::entity::Comment;
+use crate::domain::comment::entity::{Comment, CommentJson};
 use crate::error::Result;
 pub trait Repository {
-   fn create(&self, user: &Comment) -> Result<Comment>;
-   fn find(&self)-> Vec<Comment>;
-   fn find_by(&self,user: &Comment)-> Result<Comment>;
-   fn find_one(&self, id: &i32) -> Result<Comment>;
-   fn update(&self, id:i32, c: &Comment) -> Result<Comment>;
+   fn create(&self, author: i32, slug: &str, body: &str) -> Result<CommentJson>;
+   fn find_by_slug(&self,slug: &str)-> Result<Vec<CommentJson>>;
+   fn delete(&self, author: i32, slug: &str, comment_id: i32) -> Result<bool>;
 
 }
